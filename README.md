@@ -15,6 +15,6 @@ The app connects to a Firebase Realtime Database where a list of words is stored
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/ramy9999/firebase-anagram-finder.git
+   git clone https://github.com/Ramy9999/firebase-anagram-finder.git
 2. Make sure `styles.css` and anagrams-icon.png are in the same folder as `index.html`
 3. Open `index.html` in any modern ES6 browser — you're ready to go!
