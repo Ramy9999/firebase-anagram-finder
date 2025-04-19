@@ -7,8 +7,8 @@ The app connects to a Firebase Realtime Database where a list of words is stored
 
 ## 📦 Technologies
 
-- HTML / CSS / JavaScript  
-- Firebase Realtime Database  
+- Firebase Realtime Database
+- HTML / CSS / JavaScript
 - ES6 Modules
 
 ## 🔧 How to Use
