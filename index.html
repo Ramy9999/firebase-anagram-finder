@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anagram Finder</title>
+  <link rel="icon" type="image/x-icon" href="anagrams-icon.png">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Anagram Finder</h1>
+    <input type="text" id="wordInput" placeholder="Enter a word..." />
+    <p id="result">
+	  <span id="anagram-count-wrapper">
+		<span id="anagram-count-old" class="anagram-count">0</span>
+		<span id="anagram-count-new" class="anagram-count" style="display: none;">0</span>
+	  </span>anagrams found
+	</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIAZvp7iQwOnXyJR8jhuoxBYhV9zlXb5g",
+      authDomain: "anagram-detector.firebaseapp.com",
+      databaseURL: "https://anagram-detector-default-rtdb.firebaseio.com",
+      projectId: "anagram-detector",
+      storageBucket: "anagram-detector.firebasestorage.app",
+      messagingSenderId: "1049190239548",
+      appId: "1:1049190239548:web:801c96c4b638b218586239"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const input = document.getElementById('wordInput');
+    const result = document.getElementById('result');
+
+    const normalize = word => word.toLowerCase().split('').sort().join('');
+
+    let words = [];
+
+    get(ref(db, 'test')).then(snapshot => {
+      if (snapshot.exists()) {
+        words = Object.values(snapshot.val());
+      }
+    });
+
+    input.addEventListener('input', () => {
+	  const query = normalize(input.value);
+	  const matches = words.filter(w => normalize(w) === query && w.toLowerCase() !== input.value.toLowerCase());
+
+	  const oldSpan = document.getElementById('anagram-count-old');
+	  const newSpan = document.getElementById('anagram-count-new');
+	  const newCount = `${matches.length}`;
+
+	  // Animate whole message
+	  result.classList.add('animate');
+
+	  // Only animate if number changed
+	  if (oldSpan.textContent !== newCount) {
+		newSpan.textContent = newCount;
+		newSpan.className = 'anagram-count slide-in';
+		newSpan.style.display = 'inline-block';
+
+		// Slide old out
+		oldSpan.classList.add('slide-out');
+
+		// After old is gone, slide new in
+		setTimeout(() => {
+		  oldSpan.style.display = 'none';
+		  newSpan.classList.remove('slide-in');
+		  newSpan.classList.add('slide-in-active');
+
+		  // Swap IDs for next round
+		  oldSpan.id = 'anagram-count-temp';
+		  newSpan.id = 'anagram-count-old';
+		  oldSpan.id = 'anagram-count-new';
+
+		  // Reset classes
+		  oldSpan.className = 'anagram-count';
+		  setTimeout(() => {
+			newSpan.classList.remove('slide-in-active');
+		  }, 300);
+		}, 300);
+	  }
+
+	  // Reset fade/scale animation
+	  setTimeout(() => {
+		result.classList.remove('animate');
+	  }, 300);
+	});
+  </script>
+</body>
+</html>
