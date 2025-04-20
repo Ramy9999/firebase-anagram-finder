@@ -3,7 +3,7 @@ A small web app that checks for anagrams in real-time using Firebase Realtime Da
 
 ![Firebase Realtime Database](./Firebase-Console-Realtime-Database.png)
 
-The app connects to a Firebase Realtime Database where a list of words is stored. When a user types a word, the app checks if any stored words are anagrams of the input, updating the result live. All logic runs in the browser.
+The app connects to a Firebase Realtime Database where a list of words is stored. When a user types a word, the app checks if any stored words are anagrams of the input, updating the result live. All logic runs in the browser without a server.
 
 ## 📦 Technologies
 
