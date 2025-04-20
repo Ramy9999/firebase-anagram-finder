@@ -8,21 +8,30 @@
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
+  <!-- Main container for layout -->
   <div class="container">
+    <!-- Page heading -->
     <h1>Anagram Finder</h1>
+	<!-- Input field for entering a word -->
     <input type="text" id="wordInput" placeholder="Enter a word..." />
+	<!-- Result display (with separate spans for animation of numbers) -->
     <p id="result">
 	  <span id="anagram-count-wrapper">
+	    <!-- Currently displayed number -->
 		<span id="anagram-count-old" class="anagram-count">0</span>
+		<!-- Incoming number, initially hidden -->
 		<span id="anagram-count-new" class="anagram-count" style="display: none;">0</span>
 	  </span>anagrams found
 	</p>
   </div>
 
+  <!-- JavaScript module for Firebase and logic -->
   <script type="module">
+    // Import Firebase functionality from CDN
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+    
+	// Firebase project configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBIAZvp7iQwOnXyJR8jhuoxBYhV9zlXb5g",
       authDomain: "anagram-detector.firebaseapp.com",
@@ -32,63 +41,73 @@
       messagingSenderId: "1049190239548",
       appId: "1:1049190239548:web:801c96c4b638b218586239"
     };
-
+    
+	// Initialize Firebase app and get database reference
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
+    
+	// Get references to DOM elements
     const input = document.getElementById('wordInput');
     const result = document.getElementById('result');
-
+    
+	// Normalize a word by sorting its letters alphabetically
     const normalize = word => word.toLowerCase().split('').sort().join('');
-
+    
+	// Will hold all words fetched from Firebase
     let words = [];
-
+    
+	// Fetch word list from Firebase at "test" node
     get(ref(db, 'test')).then(snapshot => {
       if (snapshot.exists()) {
-        words = Object.values(snapshot.val());
+        words = Object.values(snapshot.val()); // Store words as array
       }
     });
 
+    // Listen for changes in the input field
     input.addEventListener('input', () => {
-	  const query = normalize(input.value);
+	  const query = normalize(input.value); // Normalize user input
+	  
+	  // Filter for words that are valid anagrams
 	  const matches = words.filter(w => normalize(w) === query && w.toLowerCase() !== input.value.toLowerCase());
 
 	  const oldSpan = document.getElementById('anagram-count-old');
 	  const newSpan = document.getElementById('anagram-count-new');
-	  const newCount = `${matches.length}`;
+	  const newCount = `${matches.length}`; // Convert to string
 
-	  // Animate whole message
+	  // Add fade/scale animation to the entire result
 	  result.classList.add('animate');
 
-	  // Only animate if number changed
+	  // If the number has changed, animate the number transition
 	  if (oldSpan.textContent !== newCount) {
 		newSpan.textContent = newCount;
 		newSpan.className = 'anagram-count slide-in';
-		newSpan.style.display = 'inline-block';
+		newSpan.style.display = 'inline-block'; // Make it visible
 
-		// Slide old out
+		// Animate old number out (slide down + fade out)
 		oldSpan.classList.add('slide-out');
 
-		// After old is gone, slide new in
+		// After old number is gone, slide new number in
 		setTimeout(() => {
-		  oldSpan.style.display = 'none';
-		  newSpan.classList.remove('slide-in');
-		  newSpan.classList.add('slide-in-active');
+		  oldSpan.style.display = 'none'; // Hide old number
+		  newSpan.classList.remove('slide-in'); // Reset
+		  newSpan.classList.add('slide-in-active'); // Slide in new number from above
 
-		  // Swap IDs for next round
+		  // Swap IDs so new number becomes old number
 		  oldSpan.id = 'anagram-count-temp';
 		  newSpan.id = 'anagram-count-old';
 		  oldSpan.id = 'anagram-count-new';
 
-		  // Reset classes
+		  // Reset the class of the old span
 		  oldSpan.className = 'anagram-count';
+		  
+		  // Clean up slide-in animation after it's done
 		  setTimeout(() => {
 			newSpan.classList.remove('slide-in-active');
 		  }, 300);
 		}, 300);
 	  }
 
-	  // Reset fade/scale animation
+	  // Reset the scale/fade animation after it's done
 	  setTimeout(() => {
 		result.classList.remove('animate');
 	  }, 300);
