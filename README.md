@@ -21,3 +21,7 @@ The app connects to a Firebase Realtime Database where a list of words is stored
    
 3. Make sure `styles.css` and anagrams-icon.png are in the same folder as `index.html`
 4. Open `index.html` in any modern ES6 browser — you're ready to go!
+
+   Or, you can go to this link to experience the project live!
+
+   https://ramy9999.github.io/firebase-anagram-finder
